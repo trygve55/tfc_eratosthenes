@@ -1,0 +1,29 @@
+![Eratosthenes Splash Image](./img/Eratosthenes.png)
+
+*The world is spherical, as it should be.*
+
+TFC Eratosthenes
+=======
+In 240 B.C., Greek scholar Eratosthenes calculated the Earth’s circumference to be roughly 25,000 miles, providing early proof of its spherical shape. With modern technology and the amazing world generation in TerraFirmaCraft we are able to recreate this in Minecraft.
+
+
+### Features
+* Modifies TerraFirmaCraft world generation to be shaped to fit the Craster Parabolic map projection.
+* When crossing the 180° meridian westwards or eastwards you(and your boat or horse) will be teleported to the corresponding cordinates on the other side.
+* Special handling around the poles to prevent glitches.
+
+### Tips
+* If you use [Distant Horizons](https://modrinth.com/mod/distanthorizons) together with this mod you can set the "Earth Curve Ratio" to 250.
+  * This value is for the default Temperature Scale of 20km. You will find this setting under world generation.
+    * If you double the Temperature Scale you can half this value.
+
+### Q & A
+* Question: Is this safe to add to an existing world? <br>
+  Answer: It should be safe, but chunks outside the
+* Question: Do I need TerraFirmaCraft(TFC) to use this mod? <br>
+  Answer: Yes, it fetches data about world size from TFC and modifies TFC's world generation.
+
+### Links
+- [Download on CurseForge (Awaiting approval)](https://www.curseforge.com/)
+- [Download on modrinth (Awaiting approval)](https://modrinth.com/)
+- [Discuss on Discord (Todo)](https://discord.gg/PRuAKvY)

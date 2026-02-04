@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.trygve55.eratosthenes.mixins",
+  "mixins": [
+    "RegionGeneratorMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "tfc.refmap.json"
+}

@@ -6,8 +6,8 @@ TFC Eratosthenes
 =======
 In 240 B.C., Greek scholar Eratosthenes calculated the Earth’s circumference to be roughly 25,000 miles, providing early proof of its spherical shape. With modern technology and the amazing world generation in TerraFirmaCraft we are able to recreate this in Minecraft.
 
-
 ### Features
+* You can now sail around the world!
 * Modifies TerraFirmaCraft world generation to be shaped to fit the Craster Parabolic map projection.
 * Preventing islands hotspot volcanoes from spawning outside the "world".
 * When crossing the 180° meridian westwards or eastwards you(and your boat or horse) will be teleported to the corresponding cordinates on the other side.
@@ -23,6 +23,8 @@ In 240 B.C., Greek scholar Eratosthenes calculated the Earth’s circumference t
   Answer: It should be safe as long as you have not explored near the "edge of the world", There might be some weirdness if these chunks already exists.
 * Question: Do I need TerraFirmaCraft(TFC) to use this mod? <br>
   Answer: Yes, it fetches data about world size from TFC and modifies TFC's world generation. It uses the temperature scale value. 
+* Question: Do I need this on both the server and client?
+  Answer: It's required on the server, and optional on the client. If it's not installed on the client some specific movements around the poles and meridian crossing teleportation might look a little janky. 
 
 ### Links
 - [Download on CurseForge (Awaiting approval)](https://www.curseforge.com/)

@@ -9,6 +9,7 @@ In 240 B.C., Greek scholar Eratosthenes calculated the Earth’s circumference t
 
 ### Features
 * Modifies TerraFirmaCraft world generation to be shaped to fit the Craster Parabolic map projection.
+* Preventing islands hotspot volcanoes from spawning outside the "world".
 * When crossing the 180° meridian westwards or eastwards you(and your boat or horse) will be teleported to the corresponding cordinates on the other side.
 * Special handling around the poles to prevent glitches.
 
@@ -19,7 +20,7 @@ In 240 B.C., Greek scholar Eratosthenes calculated the Earth’s circumference t
 
 ### Q & A
 * Question: Is this safe to add to an existing world? <br>
-  Answer: It should be safe, but chunks outside the
+  Answer: It should be safe as long as you have not explored near the "edge of the world", There might be some weirdness if these chunks already exists.
 * Question: Do I need TerraFirmaCraft(TFC) to use this mod? <br>
   Answer: Yes, it fetches data about world size from TFC and modifies TFC's world generation.
 

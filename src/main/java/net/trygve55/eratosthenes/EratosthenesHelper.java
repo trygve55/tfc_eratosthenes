@@ -21,20 +21,21 @@ public class EratosthenesHelper {
         final float latitude = getLatitude(equatorDistance, halfMeridian);
         final int currentHalfCircumference = getHalfCircumferenceAtLatitude(latitude, halfMeridian);
 
-        return Math.min(
-            currentHalfCircumference == 0 ? 1f : Mth.clampedMap(
-                Math.abs(Units.gridToBlock(point.x)),
-                currentHalfCircumference * 0.85f,
-                1.1f * currentHalfCircumference,
-                1,
-                0),
-            halfMeridian == 0 ? 1f : Mth.clampedMap(
-                Math.abs(Units.gridToBlock(point.z) - equatorOffset),
-                halfMeridian * 0.87f,
-                1.08f * halfMeridian,
-                1,
-                0)
-        );
+        return Math.min(latitude < 90 ? 1.f : 0.f
+                , Math.min(
+                        currentHalfCircumference == 0 ? 1f : Mth.clampedMap(
+                                Math.abs(Units.gridToBlock(point.x)),
+                                currentHalfCircumference * 0.85f,
+                                1.1f * currentHalfCircumference,
+                                1,
+                                0),
+                        halfMeridian == 0 ? 1f : Mth.clampedMap(
+                                Math.abs(Units.gridToBlock(point.z) - equatorOffset),
+                                halfMeridian * 0.93f,
+                                1.05f * halfMeridian,
+                                1,
+                                0)
+                ));
     }
 
     private static float getEquatorOffset(int halfMeridian) {

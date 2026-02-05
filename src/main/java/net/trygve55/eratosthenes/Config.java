@@ -13,5 +13,9 @@ public class Config {
             .comment("Whether to teleport players crossing the 180° to the other side of the world.")
             .define("crossing180MeridianTeleport", true);
 
+    public static final ModConfigSpec.BooleanValue KEEP_ISLANDS_AND_HOTSPOT_VOLCANOES_INSIDE = BUILDER
+            .comment("Whether to prevent island and hotspot volcanoes outside the \"world\".")
+            .define("keepIslandsAndHotspotVolcanoesInside", true);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 }

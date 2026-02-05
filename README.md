@@ -16,13 +16,13 @@ In 240 B.C., Greek scholar Eratosthenes calculated the Earth’s circumference t
 ### Tips
 * If you use [Distant Horizons](https://modrinth.com/mod/distanthorizons) together with this mod you can set the "Earth Curve Ratio" to 250.
   * This value is for the default Temperature Scale of 20km. You will find this setting under world generation.
-    * If you double the Temperature Scale you can half this value.
+    * If you double the Temperature Scale you can half this value, and the other way around.
 
 ### Q & A
 * Question: Is this safe to add to an existing world? <br>
   Answer: It should be safe as long as you have not explored near the "edge of the world", There might be some weirdness if these chunks already exists.
 * Question: Do I need TerraFirmaCraft(TFC) to use this mod? <br>
-  Answer: Yes, it fetches data about world size from TFC and modifies TFC's world generation.
+  Answer: Yes, it fetches data about world size from TFC and modifies TFC's world generation. It uses the temperature scale value. 
 
 ### Links
 - [Download on CurseForge (Awaiting approval)](https://www.curseforge.com/)

@@ -78,15 +78,15 @@ public class TFCEratosthenes {
 
             if (isNorthPole(currentPos)) {
                 sendMessage(player, "You have reached The North Pole.", true);
-                northPolarPushback(player, currentPos);
-                eastWestPolarPushback(player, currentPos);
+                northPolarPushback(player);
+                eastWestPolarPushback(player);
                 return;
             }
 
             if (isSouthPole(currentPos)) {
                 sendMessage(player, "You have reached The South Pole.", true);
-                southPolarPushBack(player, currentPos);
-                eastWestPolarPushback(player, currentPos);
+                southPolarPushBack(player);
+                eastWestPolarPushback(player);
                 return;
             }
 
@@ -105,14 +105,13 @@ public class TFCEratosthenes {
                     passThe180Meridian(player.getRootVehicle());
                 }
 
-                sendMessage(
-                        player,
-                        String.format(
-                                "Crossing the 180° meridian %s at a latitude of %.0f°%s.",
-                                isWest(currentPos) ? "westwards" : "eastwards",
-                                latitude,
-                                getHemisphere(latitude, currentPos)),
-                        false);
+                String message = String.format(
+                        "Crossing the 180° meridian %s at a latitude of %.0f°%s.",
+                        isWest(currentPos) ? "westwards" : "eastwards",
+                        latitude,
+                        getHemisphere(latitude, currentPos));
+                LOGGER.info("{} : {}", player.getName().getString(), message);
+                sendMessage(player, message, false);
             }
         }
     }
@@ -127,21 +126,39 @@ public class TFCEratosthenes {
         }
     }
 
-    private void northPolarPushback(Player player, Vec3 currentPos) {
-        if (currentPos.z <= -halfMeridian + equatorOffset - graceDistancePole) {
-            player.addDeltaMovement(new Vec3(0, 0, 0.05));
+    private void northPolarPushback(Player player) {
+        Vec3 currentPos = player.position();
+
+        if (isServerSide(player) && currentPos.z <= -halfMeridian + equatorOffset - graceDistancePole) {
+            player.moveTo(currentPos.x, currentPos.y, -halfMeridian + equatorOffset - graceDistancePole);
+        }
+
+        if (!isServerSide(player) && currentPos.z <= -halfMeridian + equatorOffset - (graceDistancePole - 1)) {
+            player.addDeltaMovement(new Vec3(0, 0, 0.06));
         }
     }
 
-    private void southPolarPushBack(Player player, Vec3 currentPos) {
-        if (currentPos.z >= halfMeridian + equatorOffset + graceDistancePole) {
-            player.addDeltaMovement(new Vec3(0, 0, -0.05));
+    private void southPolarPushBack(Player player) {
+        Vec3 currentPos = player.position();
+
+        if (isServerSide(player) && currentPos.z >= halfMeridian + equatorOffset + graceDistancePole) {
+            player.moveTo(currentPos.x, currentPos.y, halfMeridian + equatorOffset + graceDistancePole);
+        }
+
+        if (!isServerSide(player) && currentPos.z >= halfMeridian + equatorOffset + (graceDistancePole - 1)) {
+            player.addDeltaMovement(new Vec3(0, 0, -0.06));
         }
     }
 
-    private void eastWestPolarPushback(Player player, Vec3 currentPos) {
-        if (Math.abs(currentPos.x) >= graceDistancePole) {
-            player.addDeltaMovement(new Vec3(isWest(currentPos) ? 0.05 : -0.05, 0, 0));
+    private void eastWestPolarPushback(Player player) {
+        Vec3 currentPos = player.position();
+
+        if (isServerSide(player) && Math.abs(currentPos.x) > graceDistancePole) {
+            player.moveTo(isWest(currentPos) ? -graceDistancePole : graceDistancePole, currentPos.y, currentPos.z);
+        }
+
+        if (!isServerSide(player) && Math.abs(currentPos.x) > graceDistancePole - 1) {
+            player.addDeltaMovement(new Vec3(isWest(currentPos) ? 0.06 : -0.06, 0, 0));
         }
     }
 
@@ -150,7 +167,7 @@ public class TFCEratosthenes {
     }
 
     private void passThe180Meridian(Entity entity) {
-        Vec3 entityPos = entity.getPosition(0);
+        Vec3 entityPos = entity.position();
         entity.moveTo(
                 -entityPos.x + (isWest(entityPos) ? graceDistanceEastWest * -2 : graceDistanceEastWest * 2),
                 entityPos.y,

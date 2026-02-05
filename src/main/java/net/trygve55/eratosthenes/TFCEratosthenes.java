@@ -1,9 +1,7 @@
 package net.trygve55.eratosthenes;
 
 import net.dries007.tfc.util.climate.Climate;
-import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.OutgoingChatMessage;
-import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -79,16 +77,14 @@ public class TFCEratosthenes {
             Vec3 currentPos = player.position();
 
             if (isNorthPole(currentPos)) {
-                sendMessage(player, "Reached the north pole.");
-
+                sendMessage(player, "You have reached The North Pole.", true);
                 northPolarPushback(player, currentPos);
                 eastWestPolarPushback(player, currentPos);
                 return;
             }
 
             if (isSouthPole(currentPos)) {
-                sendMessage(player, "Reached the south pole.");
-
+                sendMessage(player, "You have reached The South Pole.", true);
                 southPolarPushBack(player, currentPos);
                 eastWestPolarPushback(player, currentPos);
                 return;
@@ -109,10 +105,14 @@ public class TFCEratosthenes {
                     passThe180Meridian(player.getRootVehicle());
                 }
 
-                sendMessage(player, String.format(
-                        "Crossing the 180° meridian at a latitude of %.0f°%s.",
-                        latitude,
-                        getHemisphere(latitude, currentPos)));
+                sendMessage(
+                        player,
+                        String.format(
+                                "Crossing the 180° meridian %s at a latitude of %.0f°%s.",
+                                isWest(currentPos) ? "westwards" : "eastwards",
+                                latitude,
+                                getHemisphere(latitude, currentPos)),
+                        false);
             }
         }
     }
@@ -157,12 +157,9 @@ public class TFCEratosthenes {
                 entityPos.z);
     }
 
-    private void sendMessage(Player player, String message) {
+    private void sendMessage(Player player, String message, boolean actionBar) {
         if (isServerSide(player)) {
-            player.createCommandSourceStack().sendChatMessage(
-                    OutgoingChatMessage.create(PlayerChatMessage.system(message)),
-                    false,
-                    ChatType.bind(ChatType.CHAT, player));
+            player.displayClientMessage(Component.literal(message), actionBar);
         }
     }
 

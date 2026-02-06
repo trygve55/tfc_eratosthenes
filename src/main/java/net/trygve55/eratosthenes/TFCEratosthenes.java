@@ -98,22 +98,30 @@ public class TFCEratosthenes {
             final float latitude = EratosthenesHelper.getLatitude(equatorDistance, halfMeridian);
             final int currentHalfCircumference = EratosthenesHelper.getHalfCircumferenceAtLatitude(latitude, halfMeridian);
 
-            if (havePassedMeridian(currentPos, currentHalfCircumference)) {
-                if (player.getRootVehicle() == player) {
-                    passThe180Meridian(player);
-                } else if (isServerSide(player)) {
-                    passThe180Meridian(player.getRootVehicle());
-                }
+            if (isWayOutsideTheWorld(currentPos, currentHalfCircumference)) {
+                handleWayOutsideTheWorld(player, currentPos, currentHalfCircumference);
+                return;
+            }
 
-                String message = String.format(
-                        "Crossing the 180° meridian %s at a latitude of %.0f°%s.",
-                        isWest(currentPos) ? "westwards" : "eastwards",
-                        latitude,
-                        getHemisphere(latitude, currentPos));
-                LOGGER.info("{} : {}", player.getName().getString(), message);
-                sendMessage(player, message, false);
+            if (havePassedMeridian(currentPos, currentHalfCircumference)) {
+                handlePassingTheMeridian(player, currentHalfCircumference, currentPos, latitude);
             }
         }
+    }
+
+    private boolean isWayOutsideTheWorld(Vec3 currentPos, int currentHalfCircumference) {
+        return Math.abs(currentPos.x) > currentHalfCircumference + graceDistanceEastWest * 2;
+    }
+
+    private void handleWayOutsideTheWorld(Player player, Vec3 currentPos, int currentHalfCircumference) {
+        player.moveTo(
+                isWest(currentPos) ? -currentHalfCircumference : currentHalfCircumference,
+                currentPos.y,
+                currentPos.z);
+
+        String message1 = "You're way outside the world, teleporting you back in.";
+        LOGGER.info("{} : {} Was at {}", player.getName().getString(), message1, currentPos);
+        sendMessage(player, message1, false);
     }
 
     private String getHemisphere(float latitude, Vec3 currentPos) {
@@ -166,10 +174,27 @@ public class TFCEratosthenes {
         return Math.abs(currentPos.x) > halfCircumference + graceDistanceEastWest;
     }
 
-    private void passThe180Meridian(Entity entity) {
+    private void handlePassingTheMeridian(Player player, int currentHalfCircumference, Vec3 currentPos, float latitude) {
+        if (player.getRootVehicle() == player) {
+            passThe180Meridian(player, currentHalfCircumference);
+        } else if (isServerSide(player)) {
+            passThe180Meridian(player.getRootVehicle(), currentHalfCircumference);
+        }
+
+        String message = String.format(
+                "Crossing the 180° meridian %s at a latitude of %.0f°%s.",
+                isWest(currentPos) ? "westwards" : "eastwards",
+                latitude,
+                getHemisphere(latitude, currentPos));
+        LOGGER.info("{} : {}", player.getName().getString(), message);
+        sendMessage(player, message, false);
+    }
+
+    private void passThe180Meridian(Entity entity, int currentHalfCircumference) {
         Vec3 entityPos = entity.position();
+        double meridianOvershoot = Math.abs(entityPos.x) - currentHalfCircumference;
         entity.moveTo(
-                -entityPos.x + (isWest(entityPos) ? graceDistanceEastWest * -2 : graceDistanceEastWest * 2),
+                -entityPos.x + (isWest(entityPos) ? meridianOvershoot * -2 : meridianOvershoot * 2),
                 entityPos.y,
                 entityPos.z);
     }

@@ -27,6 +27,6 @@ In 240 B.C., Greek scholar Eratosthenes calculated the Earth’s circumference t
   Answer: It's required on the server, and optional on the client. If it's not installed on the client some specific movements around the poles and meridian crossing teleportation might look a little janky. 
 
 ### Links
-- [Download on CurseForge (Awaiting approval)](https://www.curseforge.com/)
-- [Download on modrinth (Awaiting approval)](https://modrinth.com/)
-- [Discuss on Discord (Todo)](https://discord.gg/PRuAKvY)
+- [Download on CurseForge](https://www.curseforge.com/minecraft/mc-mods/tfc-eratosthenes)
+- [Download on modrinth](https://modrinth.com/mod/tfc-eratosthenes)
+- [Discuss on Discord](https://discord.com/channels/432522930610765835/1469403963572092991)

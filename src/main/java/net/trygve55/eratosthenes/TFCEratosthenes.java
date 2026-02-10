@@ -1,24 +1,24 @@
 package net.trygve55.eratosthenes;
 
-import net.dries007.tfc.util.climate.Climate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+
+import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
 
 @Mod(TFCEratosthenes.MODID)
 public class TFCEratosthenes {
@@ -32,17 +32,19 @@ public class TFCEratosthenes {
     int halfMeridian = HALF_MERIDIAN_NOT_SET;
     int equatorOffset = 0; // 0.5f * halfMeridian;
 
-    public TFCEratosthenes(IEventBus modEventBus, ModContainer modContainer) {
+    public TFCEratosthenes() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
         modEventBus.addListener(this::commonSetup);
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (TFCEratosthenes) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
-        NeoForge.EVENT_BUS.register(this);
+        EVENT_BUS.register(this);
 
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -50,62 +52,58 @@ public class TFCEratosthenes {
     }
 
     @SubscribeEvent
-    public void onWorldLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof final Level level) {
-            if (!isOverworld(level)) {
-                return;
-            }
+    public void onWorldTick(TickEvent.LevelTickEvent event) {
+        if (!isHalfMeridianSet()) {
+            WorldScaleHolder.getTemperatureScale().ifPresent(temperatureScale -> {
+                halfMeridian = temperatureScale;
+                equatorOffset = halfMeridian / 2;
 
-            halfMeridian = (int) Climate.get(level).hemisphereScale();
-            equatorOffset = halfMeridian / 2;
-
-            LOGGER.info("Half meridian set to {}, equatorial circumference is {}.", halfMeridian, halfMeridian * 4);
+                LOGGER.info("Half meridian set to {}, equatorial circumference is {}.", halfMeridian, halfMeridian * 4);
+            });
         }
     }
 
     @SubscribeEvent
-    public void onLivingMove(EntityTickEvent.Post event) {
-        if (event.getEntity() instanceof Player player) {
-            if (!isOverworld(player)) {
-                return;
-            }
-            if (Config.CROSSING_180_MERIDIAN_TELEPORT.isFalse()) {
-                return;
-            }
-            verifyHalfMeridianSet();
+    public void onLivingMove(TickEvent.PlayerTickEvent event) {
+        handleWorldBorder(event.player);
+    }
 
-            Vec3 currentPos = player.position();
+    private void handleWorldBorder(Player player) {
+        if (!isOverworld(player) || !isHalfMeridianSet() || !Config.CROSSING_180_MERIDIAN_TELEPORT.get()) {
+            return;
+        }
 
-            if (isNorthPole(currentPos)) {
-                sendMessage(player, "You have reached The North Pole.", true);
-                northPolarPushback(player);
-                eastWestPolarPushback(player);
-                return;
-            }
+        Vec3 currentPos = player.position();
 
-            if (isSouthPole(currentPos)) {
-                sendMessage(player, "You have reached The South Pole.", true);
-                southPolarPushBack(player);
-                eastWestPolarPushback(player);
-                return;
-            }
+        if (isNorthPole(currentPos)) {
+            sendMessage(player, "You have reached The North Pole.", true);
+            northPolarPushback(player);
+            eastWestPolarPushback(player);
+            return;
+        }
 
-            if (event.getEntity().tickCount % 20 == 0) {
-                return;
-            }
+        if (isSouthPole(currentPos)) {
+            sendMessage(player, "You have reached The South Pole.", true);
+            southPolarPushBack(player);
+            eastWestPolarPushback(player);
+            return;
+        }
 
-            final float equatorDistance = EratosthenesHelper.getDistanceFromEquator(currentPos, equatorOffset);
-            final float latitude = EratosthenesHelper.getLatitude(equatorDistance, halfMeridian);
-            final int currentHalfCircumference = EratosthenesHelper.getHalfCircumferenceAtLatitude(latitude, halfMeridian);
+        if (player.tickCount % 20 == 0) {
+            return;
+        }
 
-            if (isWayOutsideTheWorld(currentPos, currentHalfCircumference)) {
-                handleWayOutsideTheWorld(player, currentPos, currentHalfCircumference);
-                return;
-            }
+        final float equatorDistance = EratosthenesHelper.getDistanceFromEquator(currentPos, equatorOffset);
+        final float latitude = EratosthenesHelper.getLatitude(equatorDistance, halfMeridian);
+        final int currentHalfCircumference = EratosthenesHelper.getHalfCircumferenceAtLatitude(latitude, halfMeridian);
 
-            if (havePassedMeridian(currentPos, currentHalfCircumference)) {
-                handlePassingTheMeridian(player, currentHalfCircumference, currentPos, latitude);
-            }
+        if (isWayOutsideTheWorld(currentPos, currentHalfCircumference)) {
+            handleWayOutsideTheWorld(player, currentPos, currentHalfCircumference);
+            return;
+        }
+
+        if (havePassedMeridian(currentPos, currentHalfCircumference)) {
+            handlePassingTheMeridian(player, currentHalfCircumference, currentPos, latitude);
         }
     }
 
@@ -200,9 +198,7 @@ public class TFCEratosthenes {
     }
 
     private void sendMessage(Player player, String message, boolean actionBar) {
-        if (isServerSide(player)) {
-            player.displayClientMessage(Component.literal(message), actionBar);
-        }
+        player.displayClientMessage(Component.literal(message), actionBar);
     }
 
     private static boolean isServerSide(Player player) {
@@ -233,9 +229,7 @@ public class TFCEratosthenes {
         return isOverworld(player.level());
     }
 
-    private void verifyHalfMeridianSet() {
-        if (halfMeridian == HALF_MERIDIAN_NOT_SET) {
-            throw new RuntimeException("Unable to load halfMeridian");
-        }
+    private boolean isHalfMeridianSet() {
+        return halfMeridian != HALF_MERIDIAN_NOT_SET;
     }
 }

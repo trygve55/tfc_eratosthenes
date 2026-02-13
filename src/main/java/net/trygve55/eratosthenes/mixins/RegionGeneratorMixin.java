@@ -5,7 +5,7 @@ import net.dries007.tfc.world.region.Region;
 import net.dries007.tfc.world.region.RegionGenerator;
 import net.dries007.tfc.world.settings.Settings;
 import net.trygve55.eratosthenes.Config;
-import net.trygve55.eratosthenes.EratosthenesHelper;
+import net.trygve55.eratosthenes.MapProjectionHolder;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -27,8 +27,8 @@ public class RegionGeneratorMixin {
 
     @Inject(method = "continentFactor", at = @At("HEAD"), cancellable = true)
     public void continentFactor(Region.Point point, CallbackInfoReturnable<Float> ci) {
-        if (Config.CRASTER_PARABOLIC_MAP_PROJECTION.isTrue()) {
-            ci.setReturnValue(EratosthenesHelper.continentFactor(point, settings.temperatureScale()));
+        if (Config.CRASTER_PARABOLIC_MAP_PROJECTION.isTrue()) { // todo change config to world gen limit
+            ci.setReturnValue(MapProjectionHolder.get().continentFactor(point)); //, settings.temperatureScale()));
             ci.cancel();
         }
     }

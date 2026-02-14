@@ -8,7 +8,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.trygve55.eratosthenes.mapprojections.*;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -25,9 +24,6 @@ import net.neoforged.neoforge.common.NeoForge;
 public class TFCEratosthenes {
     public static final String MODID = "tfc_eratosthenes";
     public static final Logger LOGGER = LogUtils.getLogger();
-
-    private static final int graceDistanceEastWest = 40;
-    private static final int graceDistancePole = 100;
 
     public TFCEratosthenes(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
@@ -53,11 +49,7 @@ public class TFCEratosthenes {
             }
 
             int halfMeridian = (int) Climate.get(level).hemisphereScale();
-
-            //MapProjectionHolder.set(new CrasterParabolic(halfMeridian));
-            MapProjectionHolder.set(new TfcRealWorldFullWorld(halfMeridian));
-            //MapProjectionHolder.set(new TfcRealWorldNewWorld(halfMeridian));
-            //MapProjectionHolder.set(new TfcRealWorldOldWorld(halfMeridian));
+            MapProjectionHolder.set(Config.MAP_PROJECTION.get().toMapProjection(halfMeridian));
 
             LOGGER.info("Half meridian set to {}, equatorial circumference is {}, equator offset is {}",
                     MapProjectionHolder.get().getHalfMeridian(),
@@ -112,7 +104,7 @@ public class TFCEratosthenes {
     }
 
     private boolean isWayOutsideTheWorld(Vec3 currentPos, int currentHalfCircumference) {
-        return Math.abs(currentPos.x) > currentHalfCircumference + graceDistanceEastWest * 2;
+        return Math.abs(currentPos.x) > currentHalfCircumference + Config.MERIDIAN_CROSSING_GRACE_DISTANCE.getAsInt() * 2;
     }
 
     private void handleWayOutsideTheWorld(Player player, Vec3 currentPos, int currentHalfCircumference) {
@@ -139,11 +131,11 @@ public class TFCEratosthenes {
     private void northPolarPushback(Player player) {
         Vec3 currentPos = player.position();
 
-        if (isServerSide(player) && currentPos.z <= -MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() - graceDistancePole) {
-            player.moveTo(currentPos.x, currentPos.y, -MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() - graceDistancePole);
+        if (isServerSide(player) && currentPos.z <= -MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() - Config.POLAR_AREA_SIZE.getAsInt()) {
+            player.moveTo(currentPos.x, currentPos.y, -MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() - Config.POLAR_AREA_SIZE.getAsInt());
         }
 
-        if (!isServerSide(player) && currentPos.z <= -MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() - (graceDistancePole - 1)) {
+        if (!isServerSide(player) && currentPos.z <= -MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() - (Config.POLAR_AREA_SIZE.getAsInt() - 1)) {
             player.addDeltaMovement(new Vec3(0, 0, 0.06));
         }
     }
@@ -151,11 +143,11 @@ public class TFCEratosthenes {
     private void southPolarPushBack(Player player) {
         Vec3 currentPos = player.position();
 
-        if (isServerSide(player) && currentPos.z >= MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() + graceDistancePole) {
-            player.moveTo(currentPos.x, currentPos.y, MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() + graceDistancePole);
+        if (isServerSide(player) && currentPos.z >= MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() + Config.POLAR_AREA_SIZE.getAsInt()) {
+            player.moveTo(currentPos.x, currentPos.y, MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() + Config.POLAR_AREA_SIZE.getAsInt());
         }
 
-        if (!isServerSide(player) && currentPos.z >= MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() + (graceDistancePole - 1)) {
+        if (!isServerSide(player) && currentPos.z >= MapProjectionHolder.get().getHalfMeridian() + MapProjectionHolder.get().getEquatorOffset() + (Config.POLAR_AREA_SIZE.getAsInt() - 1)) {
             player.addDeltaMovement(new Vec3(0, 0, -0.06));
         }
     }
@@ -167,17 +159,17 @@ public class TFCEratosthenes {
 
         Vec3 currentPos = player.position();
 
-        if (isServerSide(player) && Math.abs(currentPos.x) > graceDistancePole) {
-            player.moveTo(isWest(currentPos) ? -graceDistancePole : graceDistancePole, currentPos.y, currentPos.z);
+        if (isServerSide(player) && Math.abs(currentPos.x) > Config.POLAR_AREA_SIZE.getAsInt()) {
+            player.moveTo(isWest(currentPos) ? -Config.POLAR_AREA_SIZE.getAsInt() : Config.POLAR_AREA_SIZE.getAsInt(), currentPos.y, currentPos.z);
         }
 
-        if (!isServerSide(player) && Math.abs(currentPos.x) > graceDistancePole - 1) {
+        if (!isServerSide(player) && Math.abs(currentPos.x) > Config.POLAR_AREA_SIZE.getAsInt() - 1) {
             player.addDeltaMovement(new Vec3(isWest(currentPos) ? 0.06 : -0.06, 0, 0));
         }
     }
 
     private boolean havePassedMeridian(Vec3 currentPos, int halfCircumference) {
-        return Math.abs(currentPos.x) > halfCircumference + graceDistanceEastWest;
+        return Math.abs(currentPos.x) > halfCircumference + Config.MERIDIAN_CROSSING_GRACE_DISTANCE.getAsInt();
     }
 
     private void handlePassingTheMeridian(Player player, int currentHalfCircumference, Vec3 currentPos, float latitude) {

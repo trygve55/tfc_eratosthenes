@@ -7,8 +7,8 @@ public class MapProjectionHolder {
 
     private MapProjectionHolder() {}
 
-    public static void set(MapProjection currentMapProjection) {
-        MapProjectionHolder.currentMapProjection = currentMapProjection;
+    public static void set(MapProjection mapProjection) {
+        MapProjectionHolder.currentMapProjection = mapProjection;
     }
 
     public static MapProjection get() {

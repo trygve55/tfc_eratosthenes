@@ -19,24 +19,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(RegionGenerator.class)
 public class RegionGeneratorMixin {
 
-    @Shadow
-    public Settings settings;
+  @Shadow public Settings settings;
 
-    @Shadow
-    @Mutable
-    @Final
-    public Noise2D temperatureNoise;
+  @Shadow @Mutable @Final public Noise2D temperatureNoise;
 
-    @Inject(method = "continentFactor", at = @At("HEAD"), cancellable = true)
-    public void continentFactor(Region.Point point, CallbackInfoReturnable<Float> ci) {
-        if (Config.LIMIT_WORLD_GENERATION_OUTSIDE_MAP_PROJECTION.isTrue()) {
-            ci.setReturnValue(MapProjectionHolder.get().continentFactor(point));
-            ci.cancel();
-        }
+  @Inject(method = "continentFactor", at = @At("HEAD"), cancellable = true)
+  public void continentFactor(Region.Point point, CallbackInfoReturnable<Float> ci) {
+    if (Config.LIMIT_WORLD_GENERATION_OUTSIDE_MAP_PROJECTION.isTrue()) {
+      ci.setReturnValue(MapProjectionHolder.get().continentFactor(point));
+      ci.cancel();
     }
+  }
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void onConstructed(Settings settings, Seed seed, CallbackInfo ci) {
-        MapProjectionHolder.set(Config.MAP_PROJECTION.get().toMapProjection(settings.temperatureScale()));
-    }
+  @Inject(method = "<init>", at = @At("RETURN"))
+  public void onConstructed(Settings settings, Seed seed, CallbackInfo ci) {
+    MapProjectionHolder.set(
+        Config.MAP_PROJECTION.get().toMapProjection(settings.temperatureScale()));
+  }
 }

@@ -4,6 +4,8 @@ import net.dries007.tfc.world.region.Region;
 import net.dries007.tfc.world.region.Units;
 import net.minecraft.world.phys.Vec3;
 
+import static java.lang.Math.*;
+
 public interface MapProjection {
   int getHalfMeridian();
 
@@ -14,14 +16,16 @@ public interface MapProjection {
   int getHalfCircumferenceAtLatitude(float latitude);
 
   default float getDistanceFromEquator(Region.Point point) {
-    return Math.abs((Units.gridToBlock(point.z) - getEquatorOffset()));
+    return Units.gridToBlock(point.z) - getEquatorOffset();
   }
 
   default float getDistanceFromEquator(Vec3 position) {
-    return (float) Math.abs(position.z - getEquatorOffset());
+    return (float) abs(position.z - getEquatorOffset());
   }
 
   float getLatitude(float equatorDistance);
+
+  float getLongitude(Vec3 position);
 
   boolean havePolarArea();
 }

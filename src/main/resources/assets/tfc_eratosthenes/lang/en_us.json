@@ -2,6 +2,11 @@
   "tfc_eratosthenes.configuration.title": "TFC Eratosthenes Configs",
   "tfc_eratosthenes.configuration.section.tfc_eratosthenes.common.toml": "TFC Eratosthenes Configs",
   "tfc_eratosthenes.configuration.section.tfc_eratosthenes.common.toml.title": "TFC Eratosthenes Configs",
-  "tfc_eratosthenes.configuration.craterParabolicMapProjection": "Whether to limit world generation to fit the Craster Parabolic map projection.",
-  "tfc_eratosthenes.configuration.crossing180MeridianTeleport": "Whether to teleport players crossing the 180° to the other side of the world."
+  "tfc_eratosthenes.configuration.mapProjection": "Map projection",
+  "tfc_eratosthenes.configuration.limitWorldGenerationOutsideMapProjection": "Limit world generation",
+  "tfc_eratosthenes.configuration.keepIslandsAndHotspotVolcanoesInside": "Limit island and hotspot generation",
+  "tfc_eratosthenes.configuration.showCoordinates": "Show current coordinates",
+  "tfc_eratosthenes.configuration.meridianCrossingGraceDistance": "Meridian crossing grace distance",
+  "tfc_eratosthenes.configuration.polarAreaSize": "Polar area size",
+  "tfc_eratosthenes.configuration.crossing180MeridianTeleport": "Whether to teleport players crossing the 180° meridian to the other side of the world."
 }

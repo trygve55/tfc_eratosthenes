@@ -1,8 +1,41 @@
 package net.trygve55.eratosthenes.mapprojections;
 
-public abstract class TfcRealWorldHalfWorld extends Cylindrical implements TfcRealWorld {
+import net.dries007.tfc.world.region.Region;
+import net.minecraft.world.phys.Vec3;
+
+public abstract class TfcRealWorldHalfWorld extends EqualEarth implements TfcRealWorld {
+  private final EqualEarth equalEarth = new EqualEarth() {
+    @Override
+    protected float getWidthToHeightRatio() { throw new UnsupportedOperationException(); }
+
+    @Override
+    public int getHalfMeridian() {
+      return TfcRealWorldHalfWorld.this.getHalfMeridian();
+    }
+
+    @Override
+    public float continentFactor(Region.Point point) { throw new UnsupportedOperationException(); }
+
+    @Override
+    public float getEquatorOffset() { throw new UnsupportedOperationException(); }
+  };
+
   @Override
   public float getLatitude(float equatorDistance) {
-    return equatorDistance / getHalfMeridian() * 90f; // todo temp
+    return equalEarth.getLatitude(equatorDistance);
+  }
+
+  @Override
+  public float getLongitude(Vec3 position) {
+    return (float)
+        ((getWestEdgeLongitude() + getEastEdgeLongitude()) / 2
+            + position.x
+                / getHalfCircumferenceAtLatitude(getLatitude(getDistanceFromEquator(position)))
+                * 90);
+  }
+
+  @Override
+  public float getWidthToHeightRatio() {
+    return TfcRealWorld.super.getWidthToHeightRatio();
   }
 }

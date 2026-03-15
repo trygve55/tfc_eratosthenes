@@ -3,6 +3,9 @@ package net.trygve55.eratosthenes.mapprojections;
 import net.dries007.tfc.world.region.Region;
 import net.dries007.tfc.world.region.Units;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+
+import static java.lang.Math.*;
 
 public class CrasterParabolic implements MapProjection {
   private final int halfMeridian;
@@ -24,13 +27,13 @@ public class CrasterParabolic implements MapProjection {
     final float latitude = getLatitude(equatorDistance);
     final int currentHalfCircumference = getHalfCircumferenceAtLatitude(latitude);
 
-    return Math.min(
-        latitude < 90 ? 1.f : 0.f,
-        Math.min(
+    return min(
+        abs(latitude) < 90 ? 1.f : 0.f,
+        min(
             currentHalfCircumference == 0
                 ? 1f
                 : Mth.clampedMap(
-                    Math.abs(Units.gridToBlock(point.x)),
+                    abs(Units.gridToBlock(point.x)),
                     currentHalfCircumference * 0.85f,
                     1.1f * currentHalfCircumference,
                     1,
@@ -38,7 +41,7 @@ public class CrasterParabolic implements MapProjection {
             getHalfMeridian() == 0
                 ? 1f
                 : Mth.clampedMap(
-                    Math.abs(Units.gridToBlock(point.z) - getEquatorOffset()),
+                    abs(Units.gridToBlock(point.z) - getEquatorOffset()),
                     getHalfMeridian() * 0.93f,
                     1.05f * getHalfMeridian(),
                     1,
@@ -50,15 +53,19 @@ public class CrasterParabolic implements MapProjection {
   }
 
   public int getHalfCircumferenceAtLatitude(float latitude) {
-    return (int) (getHalfMeridian() * 2 * Math.cos(Math.toRadians(latitude)));
+    return (int) (getHalfMeridian() * 2 * cos(toRadians(abs(latitude))));
   }
 
   public float getLatitude(float equatorDistance) {
     return 90 * (equatorDistance / getHalfMeridian());
   }
 
-  public float getLongitude(float x) {
-    return x / getHalfMeridian() * 90;
+  @Override
+  public float getLongitude(Vec3 position) {
+    return (float)
+        (position.x
+            / getHalfCircumferenceAtLatitude(getLatitude(getDistanceFromEquator(position)))
+            * 180);
   }
 
   @Override

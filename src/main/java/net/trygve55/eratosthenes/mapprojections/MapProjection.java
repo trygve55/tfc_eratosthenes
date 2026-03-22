@@ -1,22 +1,21 @@
 package net.trygve55.eratosthenes.mapprojections;
 
-import net.dries007.tfc.world.region.Region;
-import net.dries007.tfc.world.region.Units;
-import net.minecraft.world.phys.Vec3;
-
 import static java.lang.Math.*;
+
+import net.minecraft.world.phys.Vec3;
+import net.trygve55.eratosthenes.Units;
 
 public interface MapProjection {
   int getHalfMeridian();
 
-  float continentFactor(Region.Point point);
+  float continentFactor(int x, int z);
 
   float getEquatorOffset();
 
   int getHalfCircumferenceAtLatitude(float latitude);
 
-  default float getDistanceFromEquator(Region.Point point) {
-    return Units.gridToBlock(point.z) - getEquatorOffset();
+  default float getDistanceFromEquator(int z) {
+    return Units.gridToBlock(z) - getEquatorOffset();
   }
 
   default float getDistanceFromEquator(Vec3 position) {

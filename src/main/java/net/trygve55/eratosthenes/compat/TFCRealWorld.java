@@ -1,6 +1,6 @@
 package net.trygve55.eratosthenes.compat;
 
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import net.trygve55.eratosthenes.config.MapProjectionConfig;
 import net.yazloysasha.tfcrealworld.config.TFCRealWorldConfig;
 

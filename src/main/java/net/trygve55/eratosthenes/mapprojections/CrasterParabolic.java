@@ -1,11 +1,10 @@
 package net.trygve55.eratosthenes.mapprojections;
 
-import net.dries007.tfc.world.region.Region;
-import net.dries007.tfc.world.region.Units;
+import static java.lang.Math.*;
+
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-
-import static java.lang.Math.*;
+import net.trygve55.eratosthenes.Units;
 
 public class CrasterParabolic implements MapProjection {
   private final int halfMeridian;
@@ -19,11 +18,11 @@ public class CrasterParabolic implements MapProjection {
     return halfMeridian;
   }
 
-  public float continentFactor(Region.Point point) {
+  public float continentFactor(int x, int z) {
     // Eratosthenes continent area is within one pole-pole Craster Parabolic map area.
     // Preventing continents outside this area. Interpolate for smooth borders
 
-    final float equatorDistance = getDistanceFromEquator(point);
+    final float equatorDistance = getDistanceFromEquator(z);
     final float latitude = getLatitude(equatorDistance);
     final int currentHalfCircumference = getHalfCircumferenceAtLatitude(latitude);
 
@@ -33,7 +32,7 @@ public class CrasterParabolic implements MapProjection {
             currentHalfCircumference == 0
                 ? 1f
                 : Mth.clampedMap(
-                    abs(Units.gridToBlock(point.x)),
+                    abs(Units.gridToBlock(x)),
                     currentHalfCircumference * 0.85f,
                     1.1f * currentHalfCircumference,
                     1,
@@ -41,7 +40,7 @@ public class CrasterParabolic implements MapProjection {
             getHalfMeridian() == 0
                 ? 1f
                 : Mth.clampedMap(
-                    abs(Units.gridToBlock(point.z) - getEquatorOffset()),
+                    abs(Units.gridToBlock(z) - getEquatorOffset()),
                     getHalfMeridian() * 0.93f,
                     1.05f * getHalfMeridian(),
                     1,

@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import net.minecraft.server.MinecraftServer;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.trygve55.eratosthenes.TFCEratosthenes;
 
 public class ConfigManager {
@@ -27,7 +27,7 @@ public class ConfigManager {
       Path serverConfigFile = getServerConfigPath(server);
       Path worldConfigDir = serverConfigFile.getParent();
       Path commonConfigFile =
-          server.getServerDirectory().resolve("config").resolve(SERVER_CONFIG_NAME);
+          server.getServerDirectory().toPath().resolve("config").resolve(SERVER_CONFIG_NAME);
 
       if (!Files.exists(serverConfigFile) && Files.exists(commonConfigFile)) {
         Files.createDirectories(worldConfigDir);

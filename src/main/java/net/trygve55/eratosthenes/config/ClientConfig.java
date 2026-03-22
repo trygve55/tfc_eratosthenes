@@ -1,12 +1,12 @@
 package net.trygve55.eratosthenes.config;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ClientConfig {
-  private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+  private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-  public static final ModConfigSpec.BooleanValue SHOW_COORDINATES =
+  public static final ForgeConfigSpec.BooleanValue SHOW_COORDINATES =
       BUILDER.comment("Show current coordinates").define("showCoordinates", false);
 
-  public static final ModConfigSpec SPEC = BUILDER.build();
+  public static final ForgeConfigSpec SPEC = BUILDER.build();
 }

@@ -1,6 +1,5 @@
 package net.trygve55.eratosthenes.mapprojections;
 
-import net.dries007.tfc.world.region.Region;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class TfcRealWorldHalfWorld extends EqualEarth implements TfcRealWorld {
@@ -14,7 +13,7 @@ public abstract class TfcRealWorldHalfWorld extends EqualEarth implements TfcRea
     }
 
     @Override
-    public float continentFactor(Region.Point point) { throw new UnsupportedOperationException(); }
+    public float continentFactor(int x, int z) { throw new UnsupportedOperationException(); }
 
     @Override
     public float getEquatorOffset() { throw new UnsupportedOperationException(); }

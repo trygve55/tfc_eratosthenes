@@ -149,13 +149,13 @@ mixin {
 // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
+            minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
+            forge_version       : forge_version, forge_version_range: forge_version_range,
             loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
-            mapping_channel: mapping_channel,
-            tfc_version_range: tfc_version_range
+            mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors         : mod_authors, mod_description: mod_description,
+            mapping_channel     : mapping_channel,
+            tfc_version_range   : tfc_version_range
     ]
     inputs.properties replaceProperties
 
@@ -191,7 +191,7 @@ tasks.named('jar', Jar).configure {
 
 tasks.named('jar', Jar).configure {
     archiveFileName.set("${project.name}-Forge-${minecraft_version}-${project.version}.jar")
-} // todo check if working
+}
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {

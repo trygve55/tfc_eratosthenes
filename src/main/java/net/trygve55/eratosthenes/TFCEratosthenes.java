@@ -1,34 +1,33 @@
 package net.trygve55.eratosthenes;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
+
+import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.slf4j.Logger;
-
-import com.mojang.logging.LogUtils;
-
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-
-import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.trygve55.eratosthenes.compat.TFCRealWorld;
+import net.trygve55.eratosthenes.config.ClientConfig;
+import net.trygve55.eratosthenes.config.CommonConfig;
+import net.trygve55.eratosthenes.config.ConfigManager;
+import net.trygve55.eratosthenes.config.ServerConfig;
+import org.slf4j.Logger;
 
 @Mod(TFCEratosthenes.MODID)
 public class TFCEratosthenes {
   public static final String MODID = "tfc_eratosthenes";
   public static final Logger LOGGER = LogUtils.getLogger();
 
-    public TFCEratosthenes() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+  public TFCEratosthenes() {
+    IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        modEventBus.addListener(this::commonSetup);
+    modEventBus.addListener(this::commonSetup);
 
     // Register ourselves for server and other game events we are interested in.
     // Note that this is necessary if and only if we want *this* class (TFCEratosthenes) to respond
@@ -40,16 +39,14 @@ public class TFCEratosthenes {
     EVENT_BUS.register(PlayerEventHandler.class);
 
     // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
-
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
+    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
+    ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
   }
 
-    private void commonSetup(FMLCommonSetupEvent event) {
-        LOGGER.info("Hmm, looks like the world is spherical.");
-    }
+  private void commonSetup(FMLCommonSetupEvent event) {
+    LOGGER.info("Hmm, looks like the world is spherical.");
+  }
 
   @SubscribeEvent
   public void onWorldLoad(LevelEvent.Load event) {
@@ -59,7 +56,8 @@ public class TFCEratosthenes {
       }
 
       if (!level.isClientSide()) {
-        int halfMeridian = (int) Climate.get(level).hemisphereScale();
+        int halfMeridian = WorldScaleHolder.getTemperatureScale().orElseThrow();
+
         if (TFCRealWorld.isLoaded()) {
           halfMeridian = TFCRealWorld.getHalfMeridian();
         }

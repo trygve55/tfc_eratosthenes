@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(OverworldClimateModel.class)
 public class OverworldClimateModelMixin {
 
-    @Shadow(remap = false)
-    public float temperatureScale;
+  @Shadow(remap = false)
+  public float temperatureScale;
 
-    @Inject(method = "onReceiveOnClient", at = @At("RETURN"), remap = false)
-    public void onReceiveOnClient(FriendlyByteBuf buffer, CallbackInfo ci) {
-        WorldScaleHolder.setTemperatureScale(temperatureScale);
-    }
+  @Inject(method = "onReceiveOnClient", at = @At("RETURN"), remap = false)
+  public void onReceiveOnClient(FriendlyByteBuf buffer, CallbackInfo ci) {
+    WorldScaleHolder.setTemperatureScale(temperatureScale);
+  }
 }

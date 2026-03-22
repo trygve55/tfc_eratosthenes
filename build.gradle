@@ -130,6 +130,8 @@ dependencies {
     // TFC!
     implementation 'curse.maven:terrafirmacraft-302973:6103204'
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // TFC Real World
+    implementation 'curse.maven:tfc-real-world-1419802:7736999'
 
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -186,6 +188,10 @@ tasks.named('jar', Jar).configure {
 // tasks.named('publish').configure {
 //     dependsOn 'reobfJar'
 // }
+
+tasks.named('jar', Jar).configure {
+    archiveFileName.set("${project.name}-Forge-${minecraft_version}-${project.version}.jar")
+} // todo check if working
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {

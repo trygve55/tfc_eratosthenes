@@ -4,21 +4,26 @@ import net.dries007.tfc.world.region.AddIslands;
 import net.dries007.tfc.world.region.Region;
 import net.dries007.tfc.world.region.RegionGenerator;
 import net.minecraft.util.RandomSource;
+import net.trygve55.eratosthenes.config.ServerConfig;
 import net.trygve55.eratosthenes.EratosthenesHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static net.trygve55.eratosthenes.config.ServerConfig.KEEP_ISLANDS_AND_HOTSPOT_VOLCANOES_INSIDE;
+
 @Mixin(AddIslands.class)
 public class AddIslandsMixin {
 
     @Inject(method = "apply", at = @At("HEAD"), cancellable = true, remap = false)
     public void apply(RegionGenerator.Context context, CallbackInfo ci) {
-        ci.cancel();
+        if (ServerConfig.getOrDefault(KEEP_ISLANDS_AND_HOTSPOT_VOLCANOES_INSIDE).isFalse()) {
+            return;
+        }
 
-        final Region region = context.region;
-        final RandomSource random = context.random;
+    final Region region = context.region;
+    final RandomSource random = context.random;
 
         for (int attempt = 0, placed = 0; attempt < 130 && placed < 15; attempt++) {
             int x = region.minX() + random.nextInt(region.sizeX());
@@ -42,5 +47,7 @@ public class AddIslandsMixin {
                 placed += 1;
             }
         }
+
+        ci.cancel();
     }
 }

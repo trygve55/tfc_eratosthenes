@@ -1,3 +1,9 @@
+## 0.2.1
+
+* Fix crash on server startup.
+* Fix server crash on client connection.
+* Fix client disconnect when connecting to server.
+
 ## 0.2.0
 
 * In game configuration menu.

@@ -1,9 +1,20 @@
 package net.trygve55.eratosthenes;
 
+import com.mojang.logging.LogUtils;
 import net.dries007.tfc.util.climate.Climate;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.trygve55.eratosthenes.compat.TFCRealWorld;
 import net.trygve55.eratosthenes.config.ClientConfig;
@@ -11,16 +22,6 @@ import net.trygve55.eratosthenes.config.CommonConfig;
 import net.trygve55.eratosthenes.config.ConfigManager;
 import net.trygve55.eratosthenes.config.ServerConfig;
 import org.slf4j.Logger;
-
-import com.mojang.logging.LogUtils;
-
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(TFCEratosthenes.MODID)
 public class TFCEratosthenes {
@@ -47,7 +48,9 @@ public class TFCEratosthenes {
     modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
     modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
 
-    modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+    if (FMLEnvironment.dist == Dist.CLIENT) {
+      modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+    }
   }
 
   private void commonSetup(FMLCommonSetupEvent event) {
@@ -61,7 +64,7 @@ public class TFCEratosthenes {
         return;
       }
 
-      if (!level.isClientSide()) {
+      if (!level.isClientSide() || isConnectedToServer()) {
         int halfMeridian = (int) Climate.get(level).hemisphereScale();
         if (TFCRealWorld.isLoaded()) {
           halfMeridian = TFCRealWorld.getHalfMeridian();
@@ -75,5 +78,9 @@ public class TFCEratosthenes {
           MapProjectionHolder.get().getHalfCircumferenceAtLatitude(0) * 2,
           MapProjectionHolder.get().getEquatorOffset());
     }
+  }
+
+  private boolean isConnectedToServer() {
+    return Minecraft.getInstance().getConnection() != null;
   }
 }

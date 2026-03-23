@@ -1,17 +1,19 @@
 package net.trygve55.eratosthenes;
 
+import static java.lang.Math.abs;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.trygve55.eratosthenes.config.ClientConfig;
 import net.trygve55.eratosthenes.config.ServerConfig;
 import org.jetbrains.annotations.NotNull;
-
-import static java.lang.Math.abs;
 
 public class PlayerEventHandler {
   @SubscribeEvent
@@ -63,6 +65,10 @@ public class PlayerEventHandler {
   }
 
   private static void showCoordinates(Player player) {
+    if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
+      return;
+    }
+
     if (ClientConfig.SHOW_COORDINATES.isTrue()) {
       Vec3 currentPos = player.position();
 

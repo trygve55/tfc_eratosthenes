@@ -4,8 +4,8 @@
   "package": "net.trygve55.eratosthenes.mixins",
   "mixins": [
     "RegionGeneratorMixin",
-    "AddIslandsMixin",
-    "AddHotspotsMixin"
+    "OverworldClimateModelMixin",
+    "PointMixin"
   ],
   "client": [],
   "injectors": {

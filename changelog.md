@@ -1,3 +1,13 @@
+## 0.2.2
+
+* Updated for
+    * TerraFirmaCraft 4.2.7
+    * TFC: Real World 4.0.6
+* Fix crash when connecting to server from "No MapProjection set for TFC Eratosthenes." exception.
+* Move almost everything server side. It's no longer required on the clientside at all.
+* Cleanup usage of mixins to avoid issues in the future.
+* Make teleportation more robust.
+
 ## 0.2.1
 
 * Fix crash on server startup.

@@ -122,9 +122,9 @@ configurations {
 
 dependencies {
     // TFC!
-    implementation 'curse.maven:terrafirmacraft-302973:6993587'
+    implementation 'curse.maven:terrafirmacraft-302973:8566530'
     // TFC Real World
-    implementation 'curse.maven:tfc-real-world-1419802:7736999'
+    implementation 'curse.maven:tfc-real-world-1419802:8552503'
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

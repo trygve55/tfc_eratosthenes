@@ -3,8 +3,6 @@ package net.trygve55.eratosthenes;
 import static java.lang.Math.abs;
 import static net.minecraftforge.event.TickEvent.Phase.END;
 
-import com.alekiponi.alekiships.common.entity.vehicle.AbstractVehicle;
-import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -29,13 +27,17 @@ public class PlayerEventHandler {
     if (!isOverworld(player)) {
       return;
     }
+
+    if (!isServerSide(player)) {
+      showCoordinates(player);
+      return;
+    }
+
     if (!ServerConfig.CROSSING_180_MERIDIAN_TELEPORT.get()) {
       return;
     }
 
     Vec3 currentPos = player.position();
-
-    showCoordinates(player);
 
     if (isNorthPole(currentPos)) {
       sendMessage(player, "You have reached The North Pole.", true);
@@ -51,9 +53,9 @@ public class PlayerEventHandler {
       return;
     }
 
-      if (event.getEntity().tickCount % 20 == 0) {
-        return;
-      }
+    if (player.tickCount % 20 == 0) {
+      return;
+    }
 
     final float equatorDistance = MapProjectionHolder.get().getDistanceFromEquator(currentPos);
     final float latitude = MapProjectionHolder.get().getLatitude(equatorDistance);
@@ -71,6 +73,10 @@ public class PlayerEventHandler {
   }
 
   private static void showCoordinates(Player player) {
+    if (isServerSide(player)) {
+      return;
+    }
+
     if (ClientConfig.SHOW_COORDINATES.get()) {
       Vec3 currentPos = player.position();
 
@@ -92,15 +98,15 @@ public class PlayerEventHandler {
 
   private static void handleWayOutsideTheWorld(
       Player player, Vec3 currentPos, int currentHalfCircumference) {
-    player.moveTo(
+    player.teleportTo(
         isWest(currentPos) ? -currentHalfCircumference : currentHalfCircumference,
         currentPos.y,
         currentPos.z);
 
-    String message1 = "You're way outside the world, teleporting you back in.";
+    String message = "You're way outside the world, teleporting you back in.";
     TFCEratosthenes.LOGGER.info(
-        "{} : {} Was at {}", player.getName().getString(), message1, currentPos);
-    sendMessage(player, message1, false);
+        "{} : {} Was at {}", player.getName().getString(), message, currentPos);
+    sendMessage(player, message, false);
   }
 
   private static String getHemisphere(float latitude) {
@@ -116,12 +122,11 @@ public class PlayerEventHandler {
   private static void northPolarPushback(Player player) {
     Vec3 currentPos = player.position();
 
-    if (isServerSide(player)
-        && currentPos.z
-            <= -MapProjectionHolder.get().getHalfMeridian()
-                + MapProjectionHolder.get().getEquatorOffset()
-                - ServerConfig.POLAR_AREA_SIZE.get()) {
-      player.moveTo(
+    if (currentPos.z
+        <= -MapProjectionHolder.get().getHalfMeridian()
+            + MapProjectionHolder.get().getEquatorOffset()
+            - ServerConfig.POLAR_AREA_SIZE.get()) {
+      player.teleportTo(
           currentPos.x,
           currentPos.y,
           -MapProjectionHolder.get().getHalfMeridian()
@@ -129,24 +134,23 @@ public class PlayerEventHandler {
               - ServerConfig.POLAR_AREA_SIZE.get());
     }
 
-    if (!isServerSide(player)
-        && currentPos.z
-            <= -MapProjectionHolder.get().getHalfMeridian()
-                + MapProjectionHolder.get().getEquatorOffset()
-                - (ServerConfig.POLAR_AREA_SIZE.get() - 1)) {
-      player.addDeltaMovement(new Vec3(0, 0, 0.06));
+    if (currentPos.z
+        <= -MapProjectionHolder.get().getHalfMeridian()
+            + MapProjectionHolder.get().getEquatorOffset()
+            - (ServerConfig.POLAR_AREA_SIZE.get() - 1)) {
+      player.addDeltaMovement(new Vec3(0, 0, 0.03));
+      player.hurtMarked = true;
     }
   }
 
   private static void southPolarPushBack(Player player) {
     Vec3 currentPos = player.position();
 
-    if (isServerSide(player)
-        && currentPos.z
-            >= MapProjectionHolder.get().getHalfMeridian()
-                + MapProjectionHolder.get().getEquatorOffset()
-                + ServerConfig.POLAR_AREA_SIZE.get()) {
-      player.moveTo(
+    if (currentPos.z
+        >= MapProjectionHolder.get().getHalfMeridian()
+            + MapProjectionHolder.get().getEquatorOffset()
+            + ServerConfig.POLAR_AREA_SIZE.get()) {
+      player.teleportTo(
           currentPos.x,
           currentPos.y,
           MapProjectionHolder.get().getHalfMeridian()
@@ -154,12 +158,12 @@ public class PlayerEventHandler {
               + ServerConfig.POLAR_AREA_SIZE.get());
     }
 
-    if (!isServerSide(player)
-        && currentPos.z
-            >= MapProjectionHolder.get().getHalfMeridian()
-                + MapProjectionHolder.get().getEquatorOffset()
-                + (ServerConfig.POLAR_AREA_SIZE.get() - 1)) {
-      player.addDeltaMovement(new Vec3(0, 0, -0.06));
+    if (currentPos.z
+        >= MapProjectionHolder.get().getHalfMeridian()
+            + MapProjectionHolder.get().getEquatorOffset()
+            + (ServerConfig.POLAR_AREA_SIZE.get() - 1)) {
+      player.addDeltaMovement(new Vec3(0, 0, -0.03));
+      player.hurtMarked = true;
     }
   }
 
@@ -170,8 +174,8 @@ public class PlayerEventHandler {
 
     Vec3 currentPos = player.position();
 
-    if (isServerSide(player) && abs(currentPos.x) > ServerConfig.POLAR_AREA_SIZE.get()) {
-      player.moveTo(
+    if (abs(currentPos.x) > ServerConfig.POLAR_AREA_SIZE.get()) {
+      player.teleportTo(
           isWest(currentPos)
               ? -ServerConfig.POLAR_AREA_SIZE.get()
               : ServerConfig.POLAR_AREA_SIZE.get(),
@@ -179,8 +183,8 @@ public class PlayerEventHandler {
           currentPos.z);
     }
 
-    if (!isServerSide(player) && abs(currentPos.x) > ServerConfig.POLAR_AREA_SIZE.get() - 1) {
-      player.addDeltaMovement(new Vec3(isWest(currentPos) ? 0.06 : -0.06, 0, 0));
+    if (abs(currentPos.x) > ServerConfig.POLAR_AREA_SIZE.get() - 1) {
+      player.addDeltaMovement(new Vec3(isWest(currentPos) ? 0.03 : -0.03, 0, 0));
     }
   }
 
@@ -199,8 +203,8 @@ public class PlayerEventHandler {
 
     String message =
         String.format(
-            "Crossing the %s %s at a latitude of %.0f°%s.",
-            getCrossingMeridianFormated(currentPos),
+            "Crossing the %s in the %s direction at a latitude of %.0f°%s.",
+            getCrossingMeridianFormated(),
             isWest(currentPos) ? "westwards" : "eastwards",
             abs(latitude),
             getHemisphere(latitude));
@@ -209,16 +213,15 @@ public class PlayerEventHandler {
   }
 
   private static void passThe180MeridianForVehicle(Player player, int currentHalfCircumference) {
-    List<Entity> passengers = new ArrayList<>(player.getRootVehicle().getPassengers());
+    Entity rootVehicle = player.getRootVehicle();
+    List<Entity> passengers = rootVehicle.getPassengers();
     passengers.forEach(Entity::unRide);
-    passThe180Meridian(player.getRootVehicle(), currentHalfCircumference);
+    passThe180Meridian(rootVehicle, currentHalfCircumference);
     passengers.forEach(passenger -> passThe180Meridian(passenger, currentHalfCircumference));
-    passengers.forEach(
-        passenger ->
-            sendMessage(player, passenger.startRiding(player.getRootVehicle(), true) + "", false));
+    passengers.forEach(passenger -> passenger.startRiding(rootVehicle));
   }
 
-  private static @NotNull String getCrossingMeridianFormated(Vec3 currentPos) {
+  private static @NotNull String getCrossingMeridianFormated() {
     int crossingMeridianLongitude =
         Math.round(
             MapProjectionHolder.get()
@@ -250,16 +253,20 @@ public class PlayerEventHandler {
   private static void passThe180Meridian(Entity entity, int currentHalfCircumference) {
     Vec3 entityPos = entity.position();
     double meridianOvershoot = abs(entityPos.x) - currentHalfCircumference;
-    entity.moveTo(
+
+    Vec3 deltaMovement = entity.getKnownMovement();
+
+    entity.teleportTo(
         -entityPos.x + (isWest(entityPos) ? meridianOvershoot * -2 : meridianOvershoot * 2),
         entityPos.y,
         entityPos.z);
+
+    entity.setDeltaMovement(deltaMovement);
+    entity.hurtMarked = true;
   }
 
   private static void sendMessage(Player player, String message, boolean actionBar) {
-    if (isServerSide(player)) {
-      player.displayClientMessage(Component.literal(message), actionBar);
-    }
+    player.displayClientMessage(Component.literal(message), actionBar);
   }
 
   private static boolean isServerSide(Player player) {

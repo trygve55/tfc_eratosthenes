@@ -3,10 +3,9 @@
   "minVersion": "0.8",
   "package": "net.trygve55.eratosthenes.mixins",
   "mixins": [
-    "AddContinentsMixin",
-    "AddIslandsMixin",
+    "RegionGeneratorMixin",
     "OverworldClimateModelMixin",
-    "RegionGeneratorMixin"
+    "PointMixin"
   ],
   "client": [],
   "injectors": {

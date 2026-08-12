@@ -3,6 +3,7 @@ package net.trygve55.eratosthenes;
 import static java.lang.Math.abs;
 import static net.minecraftforge.event.TickEvent.Phase.END;
 
+import com.alekiponi.alekiships.common.entity.vehicle.AbstractVehicle;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerEventHandler {
   @SubscribeEvent
-  public static void onLivingMove(TickEvent.PlayerTickEvent event) {
+  public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
     if (event.phase != END) {
       return;
     }
@@ -54,6 +55,10 @@ public class PlayerEventHandler {
     }
 
     if (player.tickCount % 20 == 0) {
+      return;
+    }
+
+    if (haveTickBeenProcessedForPlayer(player)) {
       return;
     }
 
@@ -197,7 +202,9 @@ public class PlayerEventHandler {
       Player player, int currentHalfCircumference, Vec3 currentPos, float latitude) {
     if (player.getRootVehicle() == player) {
       passThe180Meridian(player, currentHalfCircumference);
-    } else if (isServerSide(player)) {
+    } else if (isInAlekiShip(player)) {
+      passThe180Meridian(player.getRootVehicle(), currentHalfCircumference);
+    } else {
       passThe180MeridianForVehicle(player, currentHalfCircumference);
     }
 
@@ -218,7 +225,7 @@ public class PlayerEventHandler {
     passengers.forEach(Entity::unRide);
     passThe180Meridian(rootVehicle, currentHalfCircumference);
     passengers.forEach(passenger -> passThe180Meridian(passenger, currentHalfCircumference));
-    passengers.forEach(passenger -> passenger.startRiding(rootVehicle));
+    passengers.forEach(passenger -> passenger.startRiding(rootVehicle, true));
   }
 
   private static @NotNull String getCrossingMeridianFormated() {
@@ -254,15 +261,10 @@ public class PlayerEventHandler {
     Vec3 entityPos = entity.position();
     double meridianOvershoot = abs(entityPos.x) - currentHalfCircumference;
 
-    Vec3 deltaMovement = entity.getKnownMovement();
-
     entity.teleportTo(
         -entityPos.x + (isWest(entityPos) ? meridianOvershoot * -2 : meridianOvershoot * 2),
         entityPos.y,
         entityPos.z);
-
-    entity.setDeltaMovement(deltaMovement);
-    entity.hurtMarked = true;
   }
 
   private static void sendMessage(Player player, String message, boolean actionBar) {
@@ -295,11 +297,19 @@ public class PlayerEventHandler {
     return pos.z < MapProjectionHolder.get().getEquatorOffset();
   }
 
-  private static boolean isOverworld(Level level) {
-    return level.dimension() == Level.OVERWORLD;
+  private static boolean isOverworld(Player player) {
+    return player.level().dimension() == Level.OVERWORLD;
   }
 
-  private static boolean isOverworld(Player player) {
-    return isOverworld(player.level());
+  private static boolean haveTickBeenProcessedForPlayer(Player player) {
+    if (player.getPersistentData().getInt("tfcEratosthenesLastProcessedTick") == player.tickCount) {
+      return true;
+    }
+    player.getPersistentData().putInt("tfcEratosthenesLastProcessedTick", player.tickCount);
+    return false;
+  }
+
+  private static boolean isInAlekiShip(Player player) {
+    return player.getRootVehicle() instanceof AbstractVehicle;
   }
 }

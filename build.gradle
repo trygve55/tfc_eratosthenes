@@ -128,10 +128,17 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     // TFC!
-    implementation 'curse.maven:terrafirmacraft-302973:6103204'
+    implementation 'curse.maven:terrafirmacraft-302973:8242625'
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
     // TFC Real World
-    implementation 'curse.maven:tfc-real-world-1419802:7736999'
+    implementation 'curse.maven:tfc-real-world-1419802:8124139'
+
+    // aleki's Nifty Ships
+    implementation 'curse.maven:alekiships-1068445:5963449'
+
+    // Firma: Civilization
+    implementation 'curse.maven:firmaciv-714158:5737719'
 
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'

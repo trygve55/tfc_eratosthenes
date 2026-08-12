@@ -17,6 +17,7 @@ recreate this in Minecraft.
   corresponding cordinates on the other side.
 * Special handling around the poles to prevent glitches.
 * Support for TFC Real world and the Equal Earth projection.
+* Support for aleki's Nifty Ships and Firma: Civilization (Only 1.20.1)
 
 ### Tips
 

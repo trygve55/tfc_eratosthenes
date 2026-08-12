@@ -25,6 +25,10 @@ public interface MapProjection {
 
   float getLatitude(float equatorDistance);
 
+  default float getLatitude(Vec3 position) {
+    return getLatitude(getDistanceFromEquator(position));
+  }
+
   float getLongitude(Vec3 position);
 
   boolean havePolarArea();

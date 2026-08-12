@@ -1,4 +1,25 @@
+## 4.0.0
+
+Only for 1.21.1.
+
+* Version bump to align major version numbers with TerraFirmaCraft and other mods.
+
+## 3.0.0
+
+Only for 1.20.1.
+
+* Updated for
+    * TerraFirmaCraft 3.2.23
+    * TFC: Real World 3.0.6
+* Add compatibility for:
+    * aleki's Nifty Ships
+    * Firma: Civilization
+* All improvements from 0.2.2
+* Version bump to align major version numbers with TerraFirmaCraft and other mods.
+
 ## 0.2.2
+
+Only for 1.21.1.
 
 * Updated for
     * TerraFirmaCraft 4.2.7

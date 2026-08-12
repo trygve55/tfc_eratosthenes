@@ -18,14 +18,16 @@ public class AbstractNavItemMixin {
       remap = false,
       cancellable = true)
   private static void getNavLocation(Vec3 position, CallbackInfoReturnable<double[]> cir) {
-
-    float equatorDistance = MapProjectionHolder.get().getDistanceFromEquator(position);
-    float latitude = MapProjectionHolder.get().getLatitude(equatorDistance);
+    float latitude = MapProjectionHolder.get().getLatitude(position);
     float longitude = MapProjectionHolder.get().getLongitude(position);
     double altitude = (position.get(Direction.Axis.Y)) - 64;
 
-    latitude = Math.min(latitude, 90);
+    latitude = clipLatitudeAtPoles(latitude);
 
     cir.setReturnValue(new double[] {latitude, longitude, altitude});
+  }
+
+  private static float clipLatitudeAtPoles(float latitude) {
+    return Math.min(latitude, 90);
   }
 }

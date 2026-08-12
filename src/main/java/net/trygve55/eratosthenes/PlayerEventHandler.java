@@ -62,8 +62,7 @@ public class PlayerEventHandler {
       return;
     }
 
-    final float equatorDistance = MapProjectionHolder.get().getDistanceFromEquator(currentPos);
-    final float latitude = MapProjectionHolder.get().getLatitude(equatorDistance);
+    final float latitude = MapProjectionHolder.get().getLatitude(currentPos);
     final int currentHalfCircumference =
         MapProjectionHolder.get().getHalfCircumferenceAtLatitude(latitude);
 
@@ -85,12 +84,11 @@ public class PlayerEventHandler {
     if (ClientConfig.SHOW_COORDINATES.get()) {
       Vec3 currentPos = player.position();
 
-      float equatorDistance2 = MapProjectionHolder.get().getDistanceFromEquator(currentPos);
       sendMessage(
           player,
           "Lat: %.3f Long: %.3f"
               .formatted(
-                  MapProjectionHolder.get().getLatitude(equatorDistance2),
+                  MapProjectionHolder.get().getLatitude(currentPos),
                   MapProjectionHolder.get().getLongitude(currentPos)),
           true);
     }

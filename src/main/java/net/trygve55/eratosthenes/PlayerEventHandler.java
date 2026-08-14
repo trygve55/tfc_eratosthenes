@@ -54,7 +54,7 @@ public class PlayerEventHandler {
       return;
     }
 
-    if (player.tickCount % 20 == 0) {
+    if (player.tickCount % 23 != 0) {
       return;
     }
 

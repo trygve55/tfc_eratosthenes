@@ -3,6 +3,7 @@
 Only for 1.21.1.
 
 * Version bump to align major version numbers with TerraFirmaCraft and other mods.
+* Correctly add optional dependency TFC: Real World to the mod information.
 
 ## 3.0.0
 

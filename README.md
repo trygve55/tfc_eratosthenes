@@ -14,14 +14,15 @@ recreate this in Minecraft.
 * Modifies TerraFirmaCraft world generation to be shaped to fit the Craster Parabolic map projection.
 * Preventing islands hotspot volcanoes from spawning outside the "world".
 * When crossing the 180° meridian westwards or eastwards you(and your boat or horse) will be teleported to the
-  corresponding cordinates on the other side.
+  corresponding coordinates on the other side.
 * Special handling around the poles to prevent glitches.
 * Support for TFC Real world and the Equal Earth projection.
+* Support for aleki's Nifty Ships and Firma: Civilization (only 1.20.1).
 
 ### Tips
 
 * If you use [Distant Horizons](https://modrinth.com/mod/distanthorizons) together with this mod you can set the "Earth
-  Curve Ratio" to 250.
+  Curve Ratio" to 160.
     * This value is for the default Temperature Scale of 20km. You will find this setting under world generation.
         * If you double the Temperature Scale you can half this value, and the other way around.
 
@@ -34,8 +35,8 @@ recreate this in Minecraft.
   Answer: Yes, it fetches data about world size from TFC and modifies TFC's world generation. It uses the temperature
   scale value.
 * Question: Do I need this on both the server and client?
-  Answer: It's required on the server, and optional on the client. If it's not installed on the client some specific
-  movements around the poles and meridian crossing teleportation might look a little janky.
+  Answer: It's required on the server, and optional on the client. Only needed on the client if you want the overlay of
+  current coordinates.
 
 ### Links
 

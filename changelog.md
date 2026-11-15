@@ -1,3 +1,14 @@
+## 3.0.1 & 4.0.1
+
+* Add check to only apply on dimentions/levels using TFC world gen. Fixes crashes on flatworlds.
+
+## 4.0.0
+
+Only for 1.21.1.
+
+* Version bump to align major version numbers with TerraFirmaCraft and other mods.
+* Correctly add optional dependency TFC: Real World to the mod information.
+
 ## 3.0.0
 
 Only for 1.20.1.
@@ -9,6 +20,7 @@ Only for 1.20.1.
     * aleki's Nifty Ships
     * Firma: Civilization
 * All improvements from 0.2.2
+* Version bump to align major version numbers with TerraFirmaCraft and other mods.
 
 ## 0.2.2
 

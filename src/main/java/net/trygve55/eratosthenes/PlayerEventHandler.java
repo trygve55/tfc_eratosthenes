@@ -3,7 +3,9 @@ package net.trygve55.eratosthenes;
 import static java.lang.Math.abs;
 
 import java.util.List;
+import net.dries007.tfc.world.TFCChunkGenerator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -19,6 +21,10 @@ public class PlayerEventHandler {
   public static void onLivingMove(EntityTickEvent.Pre event) {
     if (event.getEntity() instanceof Player player) {
       if (!isOverworld(player)) {
+        return;
+      }
+
+      if (isServerSide(player) && !isTfcLevelType(player)) {
         return;
       }
 
@@ -264,6 +270,14 @@ public class PlayerEventHandler {
 
   private static boolean isServerSide(Player player) {
     return !player.level().isClientSide();
+  }
+
+  private static boolean isTfcLevelType(Player player) {
+    if (player.level() instanceof ServerLevel serverLevel) {
+      return serverLevel.getChunkSource().getGenerator() instanceof TFCChunkGenerator;
+    }
+
+    throw new IllegalStateException("Unable to determine world level type.");
   }
 
   private static boolean isNorthPole(Vec3 pos) {

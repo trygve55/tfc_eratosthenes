@@ -1,3 +1,7 @@
+## 3.0.1 & 4.0.1
+
+* Add check to only apply on dimentions/levels using TFC world gen. Fixes crashes on flatworlds.
+
 ## 4.0.0
 
 Only for 1.21.1.
